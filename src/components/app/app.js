@@ -1,14 +1,23 @@
 import React, { Component } from 'react';
-import ErrorBoundry from '../error-boundry';
+import { Route, Switch } from 'react-router-dom';
+import './index.scss';
+import { HomePage, CartPage} from "../pages";
 
-export default class App extends Component {
+const App =  () =>  {
+	return (
+		<Switch>
+			<Route
+				path='/'
+				component={HomePage}
+				exact
+			/>
 
-	render() {
-		return (
-			<ErrorBoundry>
-				<div>Error!</div>
-			</ErrorBoundry>
-		)
-	}
+			<Route
+				path='/cart'
+				component={CartPage}
+			/>
+		</Switch>
+	)
+};
 
-}
+export default App;
