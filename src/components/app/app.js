@@ -1,22 +1,26 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import './index.scss';
+import ShopHeader from '../shop-header';
 import { HomePage, CartPage} from "../pages";
 
-const App =  () =>  {
+const App = () => {
 	return (
-		<Switch>
-			<Route
-				path='/'
-				component={HomePage}
-				exact
-			/>
+		<main role='main' className='container'>
+			<ShopHeader numItems={5} total={210}/>
+			<Switch>
+				<Route
+					path='/'
+					component={HomePage}
+					exact
+				/>
 
-			<Route
-				path='/cart'
-				component={CartPage}
-			/>
-		</Switch>
+				<Route
+					path='/cart'
+					component={CartPage}
+				/>
+			</Switch>
+		</main>
 	)
 };
 

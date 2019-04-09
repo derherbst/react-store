@@ -1,11 +1,15 @@
 import React from 'react';
 import BookList from '../book-list';
-import BookstoreService from '../../services/bookstore-service';
+import ShoppingCartTable from '../shopping-cart-table';
 
 const HomePage = () => {
 	return (
-		<BookList />
-	)
+		<div>
+			<BookList />
+			<ShoppingCartTable />
+		</div>
+
+	);
 };
 
 export default HomePage;
