@@ -4,28 +4,39 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 import { withBookstoreService } from '../hoc';
-import { booksLoaded, booksRequested, booksError } from "../../actions";
+import { fetchBooks, bookAddedToCart } from "../../actions";
 import { compose } from "../../utils";
 import Spinner from "../spinner";
 import './index.scss';
 import ErrorIndicator from "../error-indicator";
 
-class BookList extends Component {
+const BookList = ({ books, onAddedToCart }) => {
+	return (
+		<ul className='book-list'>
+			{
+				books.map((book) => {
+					return (
+						<li key={book.id}>
+							<BookListItem
+								book={book}
+								onAddedToCart={() => onAddedToCart(book.id)}
+							/>
+						</li>
+					)
+				})
+			}
+		</ul>
+	)
+};
+
+class BookListContainer extends Component {
 
 	componentDidMount() {
-		// 1. получаем данные
-		const { bookstoreService, booksLoaded, booksRequested, booksError } = this.props; // booksLoaded попал в пропсы из mapDispatchToProps
-		booksRequested();
-		bookstoreService.getBooks()
-			.then((data) => {
-				// 2. передаем действия в store с помощью dispatch
-				booksLoaded(data);
-			})
-			.catch((err) => booksError(err));
+		this.props.fetchBooks()
 	}
 
 	render() {
-		const { books, loading, error } = this.props;
+		const { books, loading, error, onAddedToCart } = this.props;
 
 		if (loading) {
 			return <Spinner />
@@ -35,17 +46,7 @@ class BookList extends Component {
 			return <ErrorIndicator />
 		}
 
-		return (
-			<ul className='book-list'>
-				{
-					books.map((book) => {
-						return (
-							<li key={book.id}><BookListItem book={book} /></li>
-						)
-					})
-				}
-			</ul>
-		)
+		return <BookList books={books} onAddedToCart={onAddedToCart} />
 	}
 }
 
@@ -57,13 +58,20 @@ const mapStateToProps = (state) => {
 	}
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch, ownProps) => {
 
-	return bindActionCreators({
-		booksLoaded,
-		booksRequested,
-		booksError
-	}, dispatch)
+	const { bookstoreService } = ownProps; // ownProps это свойство компонента, которое он получил сверху от др комп (withBookstoreService)
+
+	return {
+		fetchBooks: fetchBooks(bookstoreService, dispatch),
+		onAddedToCart: (id) => dispatch(bookAddedToCart(id))
+	}
+
+	// return bindActionCreators({
+	// 	booksLoaded,
+	// 	booksRequested,
+	// 	booksError
+	// }, dispatch)
 
 	// return {
 	// 	booksLoaded: (newBooks) => {
@@ -80,4 +88,4 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
 	withBookstoreService(),
 	connect(mapStateToProps, mapDispatchToProps)
-)(BookList);
+)(BookListContainer);
